@@ -1,0 +1,62 @@
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+<div>
+
+    <h1>
+        JoaoGuilhermeTasksApp
+    </h1>
+
+    <%@page import="java.util.Objects"%>
+     <%@page import="db.Tasks"%>
+      <%@page import="db.CrudConnector"%>
+      <%@page import="java.util.ArrayList"%>
+      <%@page import="java.util.List"%>
+      
+
+    <%
+        Boolean usuarioLogado = !Objects.isNull(session.getAttribute("user"));
+        String nomeUsuario = request.getParameter("user");
+        String nomeUsuarioLogado = String.valueOf(session.getAttribute("user"));
+        List<String> tasks = new ArrayList<>();
+        System.out.println("++///***");
+        System.out.println(nomeUsuario);
+
+        
+        
+        if(nomeUsuarioLogado != null && nomeUsuarioLogado != "null") {
+            System.out.println(nomeUsuarioLogado+ "///");
+            tasks = CrudConnector.getTasks(nomeUsuarioLogado);
+        }
+        
+        if(!Objects.isNull(request.getParameter("login"))) {
+            System.out.println("login");
+            String user = request.getParameter("user");
+            session.setAttribute("user", user);
+            response.sendRedirect(request.getRequestURI());
+        }
+        
+        if(!Objects.isNull(request.getParameter("store"))) {
+            
+            System.out.println("stored" + request.getParameter("title"));
+            String title = request.getParameter("title");
+            Tasks task = new Tasks();
+            task.setTitle(title);
+            task.setUser(nomeUsuarioLogado);
+            CrudConnector.addTask(task);
+            response.sendRedirect(request.getRequestURI());
+        }
+        
+        
+        
+        if (!usuarioLogado) {
+    %> 
+    <form>
+        <label for="user">Usuário: 
+            <input id="user" name="user" placeholder="Digite seu nome...">
+        </label>
+        <button type="submit" name="login" value="logar">Logar</button>
+    </form>    
+    <% } %>
+</div>
+
